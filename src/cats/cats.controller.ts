@@ -1,19 +1,23 @@
 import { Body, Controller, Get, Header, HttpCode, Param, Post, Query, Redirect, Req } from '@nestjs/common';
 import { Request } from 'express';
+import { CreateCatDto } from 'src/core/dtos/create-cat.dto';
+import { CatsService } from "./cats.service";
+import { Cat } from 'src/core/entities/cat';
 
 @Controller('cats')
 export class CatsController {
 
+    constructor(private catsService: CatsService) { }
+
     @Post()
     @HttpCode(204)
-    @Header('Cache-Control', 'none')
-    create(@Body(`hola`) myBody) {
-        return `this action adds a new cat \n-${myBody}`
+    async create(@Body() createCatDto: CreateCatDto) {
+        this.catsService.create(createCatDto);
     }
 
     @Get()
-    findAll(): string { //optional i can use the req from express (@Req() req: Request)
-        return `This should be the list of all cats`
+    async findAll(): Promise<Cat[]> { //optional i can use the req from express (@Req() req: Request)
+        return this.catsService.findAll();
     }
 
     @Get(':id?')
